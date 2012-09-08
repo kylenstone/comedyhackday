@@ -9,8 +9,7 @@ env = ENV["RACK_ENV"] || "development"
 #DataMapper::Model.raise_on_save_failure = true
 #DataMapper::Logger.new($stdout, :debug)
 #DataMapper.setup(:default, dbConfig[env])
-puts "Using database URL: " + ENV['DATABASE_URL']
-DataMapper.setup(:default, ENV['DATABASE_URL'] || 'postgres://localhost/mydb')
+DataMapper.setup(:default, ENV['DATABASE_URL'])
 #DataMapper.setup(:default,DATABASE_URL)
 #DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/development.sqlite3")
 
