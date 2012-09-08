@@ -1,4 +1,4 @@
-class LEDIT < Sinatra::Application
+class Punchcard < Sinatra::Application
 
   before do
     content_type :json
@@ -15,4 +15,4 @@ class LEDIT < Sinatra::Application
   end
 
 end
-require_relative 'fragments'
+require_relative 'punchcard'

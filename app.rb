@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'json'
 require 'active_support/core_ext/date_time/calculations'
-class LEDIT < Sinatra::Application
+class Punchcard < Sinatra::Application
   # set defaults here
   configure :production do
   
