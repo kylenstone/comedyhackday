@@ -1,0 +1,11 @@
+sqlite: 
+  :adapter: sqlite3
+  :database: db/development.sqlite3
+
+development:
+  :adapter: postgres
+  :user: 
+  :password: fhuw4#QRh@!j23D
+  :host: jabba.legendsofthejedi.com
+  :database: miros_web
+
