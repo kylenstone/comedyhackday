@@ -74,14 +74,14 @@ class Punchcard < Sinatra::Application
 				@Response.add_error :type => "Invalid_Parameter", :message => "Parameter '#{key}' is invalid"
 			end
 		}		
-		fragment = nil
+		person = nil
 
 		if(!@Response.is_error?)
     			puts query_params
 			# check if we have an id to update (PUT request)
 			if(!query_params[:id].nil?)
 				person = Person.get(query_params[:id])
-            			if(fragment.nil?)
+            			if(person.nil?)
                 			@Response.add_error :type => "Not_Found", :message => "No person found with id = #{query_params[:id]}"
             			else
    			            Person.transaction do
@@ -94,9 +94,10 @@ class Punchcard < Sinatra::Application
             			person = Person.new(query_params)
 			        if(!person.save)
 			                @Response.add_error :type => "Save_Failed", :message => "Person failed to save #{person.errors.inspect}"
-		        end
-	            status 201
-        	end
+		        	end
+	            		 # twilio API call goes here
+				status 201
+        		end
         	# if nothing has gone wrong, return the object
 	        if(!@Response.is_error?)
 	            @Response.result = fragment.as_json(:exclude => @allExclude)
@@ -153,7 +154,7 @@ class Punchcard < Sinatra::Application
 				@Response.add_error :type => "Invalid_Parameter", :message => "Parameter '#{key}' is invalid"
 			end
 		}		
-		fragment = nil
+		teaser = nil
 
 		if(!@Response.is_error?)
     			puts query_params
