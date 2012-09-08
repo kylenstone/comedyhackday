@@ -3,7 +3,7 @@ require 'dm-timestamps' # Create
 require 'dm-transactions'
 
 require 'yaml'
-dbConfig = YAML.load_file("#{Dir.pwd}/config/database.yml")
+dbConfig = YAML::load(File.open("config/database.yml"))
 env = ENV["RACK_ENV"] || "development"
 puts "Using database #{dbConfig[env][:database]}"
 #DataMapper::Model.raise_on_save_failure = true
