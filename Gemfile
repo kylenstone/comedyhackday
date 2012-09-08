@@ -5,6 +5,8 @@ gem 'bundler'
 # Rake
 gem 'rake'
 
+gem 'pg'
+
 # Web container
 gem 'rack'
 
