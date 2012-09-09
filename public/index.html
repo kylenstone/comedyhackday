@@ -2,19 +2,6 @@
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 <script>
-$(document).ready(function () {
-	var split = location.search.replace('?', '').split('=');
-	$.getJSON('teaser/'+split[1],function (data) {
-		if(data.status == "err") {
-			alert("Invalid teaser id?");
-			return;
-		}
-		console.log(data);
-		$("#teaser").empty();
-		$("#teaser").append("<h2>"+data.result.question+"</h2");
-	}).error(function(){alert("error while getting teaser")});		
-			
-});
 function doit() {
 	var split = location.search.replace('?', '').split('=');
 	console.log(split);
@@ -30,7 +17,7 @@ function doit() {
 <body>
 <div id="teaser">
 </div>
-<p>Input your phone number to get an SMS of the rest! (remember the +1)</p>
+<p>Hurry your ass up and sign up by putting in your cell number below! (remember the +1)</p>
 <div id="theform">
 <form id="person" method="POST" action="person" onSubmit="return doit()">
 Phone number: <input id="phone" name="phone" type="text"/>
