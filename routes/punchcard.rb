@@ -55,7 +55,7 @@ class Punchcard < Sinatra::Application
 			@Response.add_error :type => "Required_field", :message => "the phone field is required!"
 		end
 
-		if(!params.include("teaser_id"))
+		if(!params.include?("teaser_id"))
 			@Response.add_error :type => "Required_field", :message => "teaser_id is a required field"
 		end
 
