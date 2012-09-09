@@ -96,14 +96,13 @@ class Punchcard < Sinatra::Application
 			                @Response.add_error :type => "Save_Failed", :message => "Person failed to save #{person.errors.inspect}"
 		        	end
 	            		 # twilio API call goes here
-	           		 @account_sid = 'ACbf2e2146d9ec277d50b05c961767e60b'
-                   @auth_token = 'bcbd44797e527e36a76eee10dd3eda22'
+	           account_sid = 'ACbf2e2146d9ec277d50b05c961767e60b'
+                   auth_token = 'bcbd44797e527e36a76eee10dd3eda22'
 
                    # set up a client to talk to the Twilio REST API
                    @client = Twilio::REST::Client.new(@account_sid, @auth_token)
 
-                   @account = @client.account
-                   @message = @account.sms.messages.create({:from => '+16032612118', :to => '+16034946150', :body => 'Here is an answer'})
+                   @message = @client.account.sms.messages.create({:from => '+16032612118', :to => '+16034946150', :body => 'Here is an answer'})
                    puts @message
 	            		 
 				           status 201
