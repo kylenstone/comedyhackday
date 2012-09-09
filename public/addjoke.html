@@ -5,8 +5,8 @@
 function doit() {
 	$.post('teaser',{question: $("#question").val(), response: $("#response").val()},function(response) {
 			console.log(response);
-			$("#jokeform").empty();
-			$("#jokeform").append("<h1>Very Punchy!</h1>");	
+			//$("#jokeform").empty();
+			alert("Very Punchy!");	
 		});
 	return false;
 }
