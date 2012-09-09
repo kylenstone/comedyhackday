@@ -5,7 +5,7 @@
 $(document).ready(function () {
 	var split = location.search.replace('?', '').split('=');
 	$.getJSON('teaser/'+split[1],function (data) {
-		if(data.stauts == "err") {
+		if(data.status == "err") {
 			alert("Invalid teaser id?");
 			return;
 		}
