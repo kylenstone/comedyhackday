@@ -197,9 +197,9 @@ class Punchcard < Sinatra::Application
 		    targets = 6
 		    count = 0
 		    until count == targets 
-			#person = Person.first(:offset => rand(Person.count), :last_pinged <= Time.to_i - 24*60*60))
+			#person = Person.first(:offset => rand(Person.count), :last_pinged <= Time.now.to_i - 24*60*60))
 	                person = Person.first(:offset => rand(Person.count))
-	                person.last_pinged = Time.to_i
+	                person.last_pinged = Time.now.to_i
 			person.save
 			@message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => "You and " + targets + " others race for: " + promotion.thing})
                         puts @message
