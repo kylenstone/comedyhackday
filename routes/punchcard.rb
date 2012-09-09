@@ -199,7 +199,7 @@ class Punchcard < Sinatra::Application
 		    until count == targets 
 			person =  Person.first(:offset => rand(Person.count), :last_pinged => nil)
 			if(person.nil?)
-				person = Person.first(:offset => rand(Person.count), :last_pinged.lte => Time.now.to_i - 5) 
+				person = Person.first(:offset => rand(Person.count), :last_pinged.lte => Time.now - 5) 
 				#person = Person.first(:offset => rand(Person.count))
 			end
 			if(person.nil?)
