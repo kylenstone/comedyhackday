@@ -55,6 +55,15 @@ class Punchcard < Sinatra::Application
 			@Response.add_error :type => "Required_field", :message => "the phone field is required!"
 		end
 
+		if(!params.include("teaser_id"))
+			@Response.add_error :type => "Required_field", :message => "teaser_id is a required field"
+		end
+
+		teaser = Teaser.get(params[:teaser_id])
+		if(teaser.nil?)
+			@Response.add_error :type => "Required_field", :message => "invalid teaser id"
+		end
+
 		params.each { |key, value|
       
      			# check if param is permitted
@@ -102,7 +111,7 @@ class Punchcard < Sinatra::Application
                    # set up a client to talk to the Twilio REST API
                    @client = Twilio::REST::Client.new(account_sid, auth_token)
 
-                   @message = @client.account.sms.messages.create({:from => '+16032612118', :to => '+16034946150', :body => 'Here is an answer'})
+                   @message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => teaser.answer})
                    puts @message
 	            		 
 				           status 201
