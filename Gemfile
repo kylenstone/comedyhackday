@@ -40,3 +40,5 @@ gem 'rest-client'
 
 #ActiveSupport
 gem 'activesupport'
+
+gem 'twilio-ruby'
