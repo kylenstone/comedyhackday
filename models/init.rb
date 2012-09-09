@@ -14,7 +14,7 @@ DataMapper.setup(:default, ENV['HEROKU_POSTGRESQL_GOLD_URL'])
 #DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/development.sqlite3")
 
 require_relative 'person'
-require_relative 'teaser'
+require_relative 'promotion'
 
 DataMapper.finalize
 
