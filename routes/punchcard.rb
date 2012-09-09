@@ -111,7 +111,7 @@ class Punchcard < Sinatra::Application
                    # set up a client to talk to the Twilio REST API
                    @client = Twilio::REST::Client.new(account_sid, auth_token)
 
-                   @message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => teaser.answer})
+                   @message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => teaser.response})
                    puts @message
 	            		 
 				           status 201
