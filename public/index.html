@@ -5,9 +5,13 @@
 $(document).ready(function () {
 	var split = location.search.replace('?', '').split('=');
 	$.get('teaser/'+split[1],function (data) {
+		if(data.stauts == "err") {
+			alert("Invalid teaser id?");
+			return;
+		}
 		$("#teaser").empty();
 		$("#teaser").append("<h2>"+teaser.question+"</h2");
-	}).error(function(){alert("invalid teaser id?")});		
+	}).error(function(){alert("error while getting teaser")});		
 			
 });
 function doit() {
