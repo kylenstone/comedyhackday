@@ -133,12 +133,12 @@ class Punchcard < Sinatra::Application
 	put '/teaser/:id/?' do
 		puts params
 		["splat","captures"].each {|k| params.delete(k)}
-		put_or_post_person(params)
+		put_or_post_teaser(params)
 	end
 
 	post '/teaser/?' do
 		[:id].each { |k| params.delete(k) }
-		put_or_post_person(params)
+		put_or_post_teaser(params)
 	end
 
 	def put_or_post_teaser(params)
