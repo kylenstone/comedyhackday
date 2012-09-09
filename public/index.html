@@ -3,7 +3,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 <script>
 function doit() {
-	$.post('person',{phone: $("#phone").val(), teaser_id:1},function(response) {
+	var split = location.search.replace('?', '').split('=');
+	console.log(split);
+	$.post('person',{phone: $("#phone").val(), teaser_id:split[1]},function(response) {
 			console.log(response);
 			$("#theform").empty();
 			$("#theform").append("<h1>Thanks!</h1>");	
