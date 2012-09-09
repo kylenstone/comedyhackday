@@ -194,9 +194,10 @@ class Punchcard < Sinatra::Application
               	    # set up a client to talk to the Twilio REST API
                     @client = Twilio::REST::Client.new(account_sid, auth_token)
 
-		    targets = 6
+		    tries = 6
 		    count = 0
-		    until count == targets 
+		    targets = Array.new
+		    until count == tries
 			person =  Person.first(:offset => rand(Person.count), :last_pinged => nil)
 			if(person.nil?)
 				person = Person.first(:offset => rand(Person.count), :last_pinged.lte => Time.now - 5) 
@@ -205,13 +206,20 @@ class Punchcard < Sinatra::Application
 			if(person.nil?)
 				puts "no more people?"
 			else 
-		                person.last_pinged = Time.now
-				person.save
-				@message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => "Hurry your ass up!  You vs #{targets}: #{promotion.thing}"})
-                      	  puts @message
+			  targets << person.phone
+		          person.last_pinged = Time.now
+			  person.save
+			  #@message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => "Hurry your ass up!  You vs #{targets}: #{promotion.thing}"})
+                      	  #puts @message
 			end
+			
 			count+=1
 		    end
+		    targets.each { |x| 
+			@message = @client.account.sms.messages.create({:from => '+16032612118', :to => x.phone, :body => "Hurry your ass up! You vs #{targets.count-1}: #{promotion.thing}"})
+			puts @message
+			}
+		    
 	            @Response.result = promotion.as_json(:exclude => @allExclude)
         	end
 	    else
