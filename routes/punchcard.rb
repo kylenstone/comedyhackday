@@ -197,12 +197,19 @@ class Punchcard < Sinatra::Application
 		    targets = 6
 		    count = 0
 		    until count == targets 
-			person = Person.first(:offset => rand(Person.count), :last_pinged.lte => Time.now.to_i - 60) | Person.first(:offset => rand(Person.count), :last_pinged => nil)
-	                #person = Person.first(:offset => rand(Person.count))
-	                person.last_pinged = Time.now
-			person.save
-			@message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => "Hurry your ass up!  You vs #{targets}: #{promotion.thing}"})
-                        puts @message
+			person =  Person.first(:offset => rand(Person.count), :last_pinged => nil)
+			if(person.nil?)
+				person = Person.first(:offset => rand(Person.count), :last_pinged.lte => Time.now.to_i - 60) 
+				#person = Person.first(:offset => rand(Person.count))
+			end
+			if(person.nil?)
+				puts "no more people?"
+			else 
+		                person.last_pinged = Time.now
+				person.save
+				@message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => "Hurry your ass up!  You vs #{targets}: #{promotion.thing}"})
+                      	  puts @message
+			end
 			count+=1
 		    end
 	            @Response.result = promotion.as_json(:exclude => @allExclude)
