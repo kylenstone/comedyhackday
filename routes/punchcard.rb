@@ -55,15 +55,6 @@ class Punchcard < Sinatra::Application
 			@Response.add_error :type => "Required_field", :message => "the phone field is required!"
 		end
 
-		if(!params.include?("promotion_id"))
-			@Response.add_error :type => "Required_field", :message => "promotion_id is a required field"
-		end
-
-		promotion = Promotion.get(params[:promotion_id])
-		if(promotion.nil?)
-			@Response.add_error :type => "Required_field", :message => "invalid promotion id"
-		end
-
 		params.each { |key, value|
       
      			# check if param is permitted
@@ -111,7 +102,7 @@ class Punchcard < Sinatra::Application
                    # set up a client to talk to the Twilio REST API
                    @client = Twilio::REST::Client.new(account_sid, auth_token)
 
-                   @message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => promotion.response})
+                   @message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => "Registration confirmed"})
                    puts @message
 	            		 
 				           status 201
@@ -145,12 +136,8 @@ class Punchcard < Sinatra::Application
 		puts params
 		query_params = {}
 		
-		if(!params.include?("question")) 
-			@Response.add_error :type => "Required_field", :message => "the phone field is required!"
-		end
-
-		if(!params.include?("response")) 
-			@Response.add_error :type => "Required_field", :message => "the phone field is required!"
+		if(!params.include?("thing")) 
+			@Response.add_error :type => "Required_field", :message => "the thing field is required!"
 		end
 
 		params.each { |key, value|
@@ -171,8 +158,10 @@ class Punchcard < Sinatra::Application
 		 	else
 				@Response.add_error :type => "Invalid_Parameter", :message => "Parameter '#{key}' is invalid"
 			end
-		}		
+		}
+
 		promotion = nil
+
 
 		if(!@Response.is_error?)
     			puts query_params
@@ -197,6 +186,25 @@ class Punchcard < Sinatra::Application
         	end
         	# if nothing has gone wrong, return the object
 	        if(!@Response.is_error?)
+		    #blast the users
+		    		
+		    account_sid = 'ACbf2e2146d9ec277d50b05c961767e60b'
+        	    auth_token = 'bcbd44797e527e36a76eee10dd3eda22'
+
+              	    # set up a client to talk to the Twilio REST API
+                    @client = Twilio::REST::Client.new(account_sid, auth_token)
+
+		    targets = 6
+		    count = 0
+		    until count == targets 
+			#person = Person.first(:offset => rand(Person.count), :last_pinged <= Time.to_i - 24*60*60))
+	                person = Person.first(:offset => rand(Person.count))
+	                person.last_pinged = Time.to_i
+			person.save
+			@message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => "You and " + targets + " others race for: " + promotion.thing})
+                        puts @message
+			count+=1
+		    end
 	            @Response.result = promotion.as_json(:exclude => @allExclude)
         	end
 	    else
