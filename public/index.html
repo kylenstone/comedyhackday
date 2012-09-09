@@ -10,7 +10,7 @@ function doit() {
 		success: function(response,textStatus,jqXHR) {
 			console.log("Horray it worked");
 			$("#theform").empty();
-			
+			$("#theform").append("<h1>Thanks!</h1>");	
 		}});
 	return false;
 }
