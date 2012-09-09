@@ -3,15 +3,11 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 <script>
 function doit() {
-	$.ajax({
-		url: "person",
-		data: {phone: $("#phone").val()},
-		type: "post",
-		success: function(response,textStatus,jqXHR) {
+	$.post('person',{phone: $("#phone").val(), teaser_id:1},function(response) {
 			console.log(response);
 			$("#theform").empty();
 			$("#theform").append("<h1>Thanks!</h1>");	
-		}});
+		});
 	return false;
 }
 </script>
