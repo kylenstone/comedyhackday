@@ -11,7 +11,7 @@ $(document).ready(function () {
 		}
 		console.log(data);
 		$("#teaser").empty();
-		$("#teaser").append("<h2>"+data.result[0].question+"</h2");
+		$("#teaser").append("<h2>"+data.result.question+"</h2");
 	}).error(function(){alert("error while getting teaser")});		
 			
 });
