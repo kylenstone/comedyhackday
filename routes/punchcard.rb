@@ -110,7 +110,7 @@ class Punchcard < Sinatra::Application
         		end
         	# if nothing has gone wrong, return the object
 	        if(!@Response.is_error?)
-	            @Response.result = fragment.as_json(:exclude => @allExclude)
+	            @Response.result = person.as_json(:exclude => @allExclude)
         	end
 	    else
             if(response.status == 200)
@@ -189,7 +189,7 @@ class Punchcard < Sinatra::Application
         	end
         	# if nothing has gone wrong, return the object
 	        if(!@Response.is_error?)
-	            @Response.result = fragment.as_json(:exclude => @allExclude)
+	            @Response.result = teaser.as_json(:exclude => @allExclude)
         	end
 	    else
             if(response.status == 200)
