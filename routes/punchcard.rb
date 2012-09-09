@@ -206,7 +206,7 @@ class Punchcard < Sinatra::Application
 			if(person.nil?)
 				puts "no more people?"
 			else 
-			  targets << person.phone
+			  targets << person
 		          person.last_pinged = Time.now
 			  person.save
 			  #@message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => "Hurry your ass up!  You vs #{targets}: #{promotion.thing}"})
