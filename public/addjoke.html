@@ -3,22 +3,19 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 <script>
 function doit() {
-	$.ajax({
-		url: "teaser",
-		data: {type: $("#type").val()},
-		type: "post",
-		success: function(response,textStatus,jqXHR) {
-			console.log("New joke has shipped shipped!");
-			$("#theform").empty();
-			$("#theform").append("<h1>Such a tease!</h1>");	
-		}});
+	$.post('teaser',{type: $("#type").val(), question: $("#question").val(), response: $("#response").val(),function(response) {
+			console.log(response);
+			$("#jokeform").empty();
+			$("#jokeform").append("<h1>Very Punchy!</h1>");	
+		});
 	return false;
 }
+$('#jokeform')[0].reset();
 </script>
 </head>
 <body>
 <h1> Punchline Joke Add-o-Matic </h1>
-<div id="theform">
+<div id="jokeform">
 <form id="teaser" method="POST" action="teaser" onSubmit="return doit()">
 Type: <input id="type" name="type" type="text"/><br />
 Enter your teaser: <input id="question" name="question" type="text"/><br />
