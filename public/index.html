@@ -21,7 +21,7 @@ function doit() {
 	$.post('person',{phone: $("#phone").val(), teaser_id:split[1]},function(response) {
 			console.log(response);
 			$("#theform").empty();
-			$("#theform").append("<h1>Thanks!</h1>");	
+			$("#theform").append("<h1>Message sent!</h1>");	
 		});
 	return false;
 }
