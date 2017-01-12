@@ -1,117 +1,33 @@
 <html>
 <head>
-
-<style type="text/css">
-#editor {
-        position: absolute;
-        width: 1024px;
-        height: 768px;
-    }
-</style>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
-<script src="src/ace.js" type="text/javascript"></script>
-<script src="src/mode-lua.js" type="text/javascript"></script>
-<script src="src/theme-solarized_dark.js" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+<script>
+function doit() {
+	var split = location.search.replace('?', '').split('=');
+	console.log(split);
+	$.post('person',{phone: $("#phone").val(), teaser_id:split[1]},function(response) {
+			console.log(response);
+			$("#theform").empty();
+			$("#theform").append("<h1>Thanks!  You should receive a confirmation text</h1>");	
+		});
+	return false;
+}
+</script>
 </head>
 <body>
-<form id=control>
-<input type="submit" value="save"/>
-<select id=fragments>
-<option value="---">-----</option>
-<option value="new">new</option>
-</select>
-<select id=type>
-<option value="program">program</option>
-<option value="library">library</option>
-</select>
+<h1>Hurry Your Ass!</h1><br />
+<img src="/hurryup.png">
+<div id="teaser">
+</div>
+<p><strong>Hurry Your Ass</strong> allows you to declare a race and invite 'scramblers' to pick up an item up for grabs.<br /><br />
+Hurry your ass up and enter your object and a contestant's phone number below (remember the +1)
+</p>
+<div id="theform">
+<form id="person" method="POST" action="person" onSubmit="return doit()">
+Phone number: <input id="phone" name="phone" type="text"/>
+<input type="submit" value="submit">
 </form>
-<div id="editor">---New Fragment</div>
-<script>
-var editor;
-var unsaved = false;
-var lastval = -1;
-function new_fragment() {
-	$.ajax({
-		type: "POST",
-		url: "/fragments/",
-		data: {fragment: editor.getSession().getValue(), type: $("#type").val()},
-		success: function(data) {
-			$("#fragments").prepend($("<option />").val(data.result.id).text(data.result.id));
-			$("#fragments").val(data.result.id);
-			$("#fragments").change();
-		}
-	});
-}
+</div>
 
-function update_fragment() {
-	if(!isNaN($("#fragments").val()) && unsaved && !confirm("You have unsaved changes!  They will be lost if you switch fragments!  Are you sure?")) {
-		$("#fragments").val(lastval);
-	} else {
-		lastval = $("#fragments").val();
-		location.hash = "#"+lastval;
-		if(!isNaN($("#fragments").val())) {
-			$.getJSON("/fragment/"+$("#fragments").val(),function(result) {
-				editor.getSession().setValue(result.result.fragment);
-				unsaved = false;
-				$("#type").val(result.result.type);
-			});
-		
-		}
-	}
-}
-
-
-$("#fragments").change(function() {
-	update_fragment();
-});
-
-$("#control").submit(function () {
-	if(!isNaN($("#fragments").val())) {
-		$.ajax({
-			type: "PUT",
-			url: "/fragment/"+$("#fragments").val(),
-			data: {fragment: editor.getSession().getValue(), type: $("#type").val()},
-			success: function() {
-				unsaved = false;
-			}
-		});
-	} else if($("#fragments").val()=="new") {
-		new_fragment();
-	}
-	return false;
-});
-window.onload = function() {
-	editor = ace.edit("editor");
-	editor.setTheme("ace/theme/solarized_dark");
-	var LuaMode = require("ace/mode/lua").Mode;
-	editor.getSession().setMode(new LuaMode());
-	editor.getSession().setTabSize(2);
-	editor.getSession().setUseSoftTabs(true);
-	
-	var hash = window.location.hash.substring(1);
-	
-
-	$.getJSON("/fragments/", function(result) {
-		var options = $("#fragments");
-		//don't forget error handling!
-		$.each(result.result, function(index,item) {
-		    options.prepend($("<option />").val(item.id).text(item.id));
-		    if(hash) {
-		    	if(item.id == hash) {
-				$("#fragments").val(item.id);
-				$("#fragments").change();
-			}
-		    }
-		});
-
-    	});
-
-	editor.getSession().on('change',function () {
-		unsaved =  true;
-	});
-
-
-};
-</script>
 </body>
 </html>

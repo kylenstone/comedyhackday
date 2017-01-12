@@ -20,18 +20,18 @@ class Punchcard < Sinatra::Application
 		@Response.to_response
 	end
 
-	get '/teaser/?' do
-		teasers = Teaser.all()
-		@Response.result = teasers.as_json(:exclude => @allExclude)
+	get '/promotion/?' do
+		promotions = Promotion.all()
+		@Response.result = promotions.as_json(:exclude => @allExclude)
 		@Response.to_response
 	end
 
-	get '/teaser/:id/?' do
-		teaser = Teaser.get(params[:id])
-		if(teaser.nil?)
-			@Response.add_error :type => "Invalid_id", :message => "No teaser found with id = #{params[:id]}"
+	get '/promotion/:id/?' do
+		promotion = Promotion.get(params[:id])
+		if(promotion.nil?)
+			@Response.add_error :type => "Invalid_id", :message => "No promotion found with id = #{params[:id]}"
 		else
-			@Response.result = teaser.as_json(:exclude => @allExclude)
+			@Response.result = promotion.as_json(:exclude => @allExclude)
 		end
 		@Response.to_response
 	end
@@ -96,11 +96,20 @@ class Punchcard < Sinatra::Application
 			                @Response.add_error :type => "Save_Failed", :message => "Person failed to save #{person.errors.inspect}"
 		        	end
 	            		 # twilio API call goes here
-				status 201
+	           account_sid = 'ACbf2e2146d9ec277d50b05c961767e60b'
+                   auth_token = 'bcbd44797e527e36a76eee10dd3eda22'
+
+                   # set up a client to talk to the Twilio REST API
+                   @client = Twilio::REST::Client.new(account_sid, auth_token)
+
+                   @message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => "Registration confirmed"})
+                   puts @message
+	            		 
+				           status 201
         		end
         	# if nothing has gone wrong, return the object
 	        if(!@Response.is_error?)
-	            @Response.result = fragment.as_json(:exclude => @allExclude)
+	            @Response.result = person.as_json(:exclude => @allExclude)
         	end
 	    else
             if(response.status == 200)
@@ -112,36 +121,32 @@ class Punchcard < Sinatra::Application
 	
 	end
 
-	put '/teaser/:id/?' do
+	put '/promotion/:id/?' do
 		puts params
 		["splat","captures"].each {|k| params.delete(k)}
-		put_or_post_person(teaser)
+		put_or_post_promotion(params)
 	end
 
-	post '/teaser/?' do
+	post '/promotion/?' do
 		[:id].each { |k| params.delete(k) }
-		put_or_post_person(teaser)
+		put_or_post_promotion(params)
 	end
 
-	def put_or_post_teaser(params)
+	def put_or_post_promotion(params)
 		puts params
 		query_params = {}
 		
-		if(!params.include?("question")) 
-			@Response.add_error :type => "Required_field", :message => "the phone field is required!"
-		end
-
-		if(!params.include?("response")) 
-			@Response.add_error :type => "Required_field", :message => "the phone field is required!"
+		if(!params.include?("thing")) 
+			@Response.add_error :type => "Required_field", :message => "the thing field is required!"
 		end
 
 		params.each { |key, value|
       
      			# check if param is permitted
-			if (Teaser.properties.named?(key))
+			if (Promotion.properties.named?(key))
         
 			        # Validate integer values
-		        	if (Teaser.properties[key].class == DataMapper::Property::Integer)
+		        	if (Promotion.properties[key].class == DataMapper::Property::Integer)
 			          begin
         			    Integer(value)
 			          rescue ArgumentError => e
@@ -153,33 +158,69 @@ class Punchcard < Sinatra::Application
 		 	else
 				@Response.add_error :type => "Invalid_Parameter", :message => "Parameter '#{key}' is invalid"
 			end
-		}		
-		teaser = nil
+		}
+
+		promotion = nil
+
 
 		if(!@Response.is_error?)
     			puts query_params
 			# check if we have an id to update (PUT request)
 			if(!query_params[:id].nil?)
-				teaser = Teaser.get(query_params[:id])
+				promotion = Promotion.get(query_params[:id])
             			if(fragment.nil?)
                 			@Response.add_error :type => "Not_Found", :message => "No person found with id = #{query_params[:id]}"
             			else
-   			            Person.transaction do
-			                   if(!teaser.destroy() || !(teaser = Teaser.new(query_params)).save)
-                			        @Response.add_error :type => "Transaction_Failed", :message=>"Transaction for teaser id #{query_params[:id]} failed" 
+   			            Promotion.transaction do
+			                   if(!promotion.destroy() || !(promotion = Promotion.new(query_params)).save)
+                			        @Response.add_error :type => "Transaction_Failed", :message=>"Transaction for promotion id #{query_params[:id]} failed" 
 		        	           end
 	               		    end
 	            		end
 		        else #create a new one and save it
-            			teaser = Teaser.new(query_params)
-			        if(!teaser.save)
-			                @Response.add_error :type => "Save_Failed", :message => "Teaser failed to save #{teaser.errors.inspect}"
+            			promotion = Promotion.new(query_params)
+			        if(!promotion.save)
+			                @Response.add_error :type => "Save_Failed", :message => "Promotion failed to save #{promotion.errors.inspect}"
 		        end
 	            status 201
         	end
         	# if nothing has gone wrong, return the object
 	        if(!@Response.is_error?)
-	            @Response.result = fragment.as_json(:exclude => @allExclude)
+		    #blast the users
+		    		
+		    account_sid = 'ACbf2e2146d9ec277d50b05c961767e60b'
+        	    auth_token = 'bcbd44797e527e36a76eee10dd3eda22'
+
+              	    # set up a client to talk to the Twilio REST API
+                    @client = Twilio::REST::Client.new(account_sid, auth_token)
+
+		    tries = 6
+		    count = 0
+		    targets = Array.new
+		    until count == tries
+			person =  Person.first(:offset => rand(Person.count), :last_pinged => nil)
+			if(person.nil?)
+				person = Person.first(:offset => rand(Person.count), :last_pinged.lte => Time.now - 5) 
+				#person = Person.first(:offset => rand(Person.count))
+			end
+			if(person.nil?)
+				puts "no more people?"
+			else 
+			  targets << person
+		          person.last_pinged = Time.now
+			  person.save
+			  #@message = @client.account.sms.messages.create({:from => '+16032612118', :to => person.phone, :body => "Hurry your ass up!  You vs #{targets}: #{promotion.thing}"})
+                      	  #puts @message
+			end
+			
+			count+=1
+		    end
+		    targets.each { |x| 
+			@message = @client.account.sms.messages.create({:from => '+16032612118', :to => x.phone, :body => "Hurry your ass up! You vs #{targets.count-1}: #{promotion.thing}"})
+			puts @message
+			}
+		    
+	            @Response.result = promotion.as_json(:exclude => @allExclude)
         	end
 	    else
             if(response.status == 200)
